@@ -5,3 +5,6 @@
 [submodule "stlink"]
 	path = stlink
 	url = https://github.com/ve3wwg/stlink.git
+[submodule "rtos/FreeRTOS-LTS"]
+	path = rtos/FreeRTOS-LTS
+	url = https://github.com/FreeRTOS/FreeRTOS-LTS
