@@ -46,12 +46,38 @@ uart_setup(void) {
 	usart_enable(USART1);
 }
 
+static void
+uart2_setup(void) {
+
+	rcc_periph_clock_enable(RCC_GPIOA);
+	rcc_periph_clock_enable(RCC_USART2);
+
+	// UART TX on PA9 (GPIO_USART2_TX)
+	gpio_set_mode(GPIOA,
+		GPIO_MODE_OUTPUT_50_MHZ,
+		GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
+		GPIO_USART2_TX);
+
+	usart_set_baudrate(USART2,38400);
+	usart_set_databits(USART2,8);
+	usart_set_stopbits(USART2,USART_STOPBITS_1);
+	usart_set_mode(USART2,USART_MODE_TX);
+	usart_set_parity(USART2,USART_PARITY_NONE);
+	usart_set_flow_control(USART2,USART_FLOWCONTROL_NONE);
+	usart_enable(USART2);
+}
+
 /*********************************************************************
  * Send one character to the UART
  *********************************************************************/
 static inline void
 uart_putc(char ch) {
 	usart_send_blocking(USART1,ch);
+}
+
+static inline void
+uart2_putc(char ch) {
+	usart_send_blocking(USART2,ch);
 }
 
 /*********************************************************************
@@ -71,6 +97,7 @@ task1(void *args __attribute__((unused))) {
 			c = '0' - 1;
 		} else	{
 			uart_putc(c);
+			uart2_putc('a');
 		}
 	}
 }
@@ -92,6 +119,7 @@ main(void) {
                 GPIO13);
 
 	uart_setup();
+	uart2_setup();
 
 	xTaskCreate(task1,"task1",100,NULL,configMAX_PRIORITIES-1,NULL);
 	vTaskStartScheduler();
